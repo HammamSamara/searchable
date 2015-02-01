@@ -20,15 +20,16 @@ trait SearchableTrait
      * @param $threshold
      * @return mixed
      */
-    public function scopeSearch($query, $search, $threshold = null)
+    public function scopeSearch($query, $search = null, $threshold = null)
     {
-        $query->select($this->getTable() . '.*');
-        $this->makeJoins($query);
-
+        $search = $search ?: \Input::get('search');
         if ( ! $search)
         {
             return $query;
         }
+
+        $query->select($this->getTable() . '.*');
+        $this->makeJoins($query);
 
         $words = explode(' ', $search);
         $selects = [];
@@ -127,7 +128,7 @@ trait SearchableTrait
             $columns = $this->primaryKey;
         }
 
-        $query->groupBy($columns);
+        $query->groupBy($columns, 'relevance');
     }
 
     /**
